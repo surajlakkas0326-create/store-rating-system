@@ -1,0 +1,33 @@
+CREATE DATABASE IF NOT EXISTS store_rating;
+USE store_rating;
+
+CREATE TABLE users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(60) NOT NULL,
+  email VARCHAR(120) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  address VARCHAR(400) NOT NULL,
+  role ENUM('admin','normal','owner') NOT NULL DEFAULT 'normal',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE stores (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(60) NOT NULL,
+  address VARCHAR(400) NOT NULL,
+  owner_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE ratings (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  store_id INT NOT NULL,
+  rating TINYINT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY one_rating_per_user (user_id, store_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (store_id) REFERENCES stores(id) ON DELETE CASCADE,
+  CHECK (rating BETWEEN 1 AND 5)
+);
